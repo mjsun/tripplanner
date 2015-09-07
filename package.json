@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon -e html,scss,js app.js"
   },
   "repository": {
     "type": "git",
@@ -17,10 +17,12 @@
   },
   "homepage": "https://github.com/mjsun/tripplanner#readme",
   "dependencies": {
+    "bluebird": "^2.9.34",
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
     "mongoose": "^4.1.5",
     "node-sass-middleware": "^0.9.0",
+    "path": "^0.11.14",
     "swig": "^1.4.2"
   },
   "devDependencies": {

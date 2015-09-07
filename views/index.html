@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-4">
+			<span>Hotels: </span>
+			<select id="hotels" name="hotels">
+				{% for hotel in hotels %}
+					<option value="{{hotel._id.toString()}}">{{hotel.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="col-md-4">
+			<span>Restaurants: </span>
+			<select id="restaurants" name="restaurants">
+				{% for restaurant in restaurants %}
+					<option value="{{restaurant._id.toString()}}">{{restaurant.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="col-md-4">
+			<span>Activities: </span>
+			<select id="activities" name="activities">
+				{% for activity in activities %}
+					<option value="{{activity._id.toString()}}">{{activity.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+</div>
+	
+{% endblock %}

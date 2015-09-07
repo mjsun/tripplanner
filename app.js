@@ -1,15 +1,17 @@
 var express = require('express');
 var app = express();
-
+var path = require('path');
 var bodyParser = require('body-parser');
 var swig = require('swig');
 var morgan = require('morgan');
 var sass = require('node-sass-middleware');
-
+var Promise = require('bluebird');
+var Hotel = require('./models/hotel');
+var Restaurant = require('./models/restaurant');
+var Activity = require('./models/activity');
 swig.setDefaults({
 	cache: false
 });
-
 
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
@@ -17,6 +19,12 @@ app.set('views', __dirname+'/views');
 app.use( morgan('dev') );
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
+
+
+
+app.use(express.static(path.join(__dirname, 'bower_components')));
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
   sass({
@@ -26,9 +34,28 @@ app.use(
   })
 );
 
-app.get('/', function(req, res){
-	res.send('Welcome!');
+
+
+require("./config/db").connect()
+.then(function(data){
+	console.log("You are connected to "+data);
 })
+.catch(function(err){
+	console.log(err);
+})
+
+
+app.get('/', function(req, res){
+	
+	Promise.all([Hotel.find(), Restaurant.find(), Activity.find()])
+	.then(function(all){
+		res.render('index', {hotels: all[0], restaurants: all[1], activities: all[2]});
+	})
+	.catch(function(err){
+		console.log(err);
+	})
+	
+});
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -40,9 +67,10 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     console.log({error: err});
-    res.render(
-        // ... fill in this part
-    );
+    res.send(err);
+    // res.render(
+    //     // ... fill in this part
+    // );
 });
 
 app.listen(3000, function(){
