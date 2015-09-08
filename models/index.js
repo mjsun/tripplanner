@@ -1,9 +1,9 @@
-// var mongoose = require('mongoose');
+var mongoose = require('mongoose');
 
-// var host = "mongodb://localhost/";
-// var db = "tripplanner";
+var host = "mongodb://localhost/";
+var db = "tripplanner";
 
-// mongoose.connect(host+db);
+mongoose.connect(host+db);
 
 
 module.exports = {

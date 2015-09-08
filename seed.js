@@ -1,10 +1,10 @@
 // This file should contain all the record creation needed to seed the database with its default values.
 // The data can then be loaded with the node seed.js 
 
-var Promise = require('bluebird');
-var mongoose = require('mongoose');
-var models = require('./models/index');
-var Place = models.Place;
+// var Promise = require('bluebird');
+// var mongoose = require('mongoose');
+// var models = require('./models/index');
+// var Place = models.Place;
 
 var data = {
   Hotel: [
@@ -66,6 +66,7 @@ mongoose.connection.on('open', function() {
     console.log("Dropped old data, now inserting data");
     Promise.map(Object.keys(data), function(modelName) {
       return Promise.map(data[modelName], function(item) {
+        item.place[0].save();
         return models[modelName].create(item);
       });
     }).then(function() {
