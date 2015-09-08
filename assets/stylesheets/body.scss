@@ -1,3 +1,5 @@
-body{
-	padding:10px;
+select {
+    // only works in webkit-compatible browsers
+    -webkit-appearance: menulist-button;
+    width: 90%;
 }

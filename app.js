@@ -22,9 +22,7 @@ app.use(bodyParser.urlencoded());
 
 
 
-app.use(express.static(path.join(__dirname, 'bower_components')));
 
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
   sass({
@@ -34,7 +32,9 @@ app.use(
   })
 );
 
+app.use(express.static(path.join(__dirname, 'bower_components')));
 
+app.use(express.static(path.join(__dirname, 'public')));
 
 require("./config/db").connect()
 .then(function(data){
@@ -49,7 +49,7 @@ app.get('/', function(req, res){
 	
 	Promise.all([Hotel.find(), Restaurant.find(), Activity.find()])
 	.then(function(all){
-		res.render('index', {hotels: all[0], restaurants: all[1], activities: all[2]});
+		res.render('index', {hotels: all[0], restaurants: all[1], activities: all[2], googleMapKey: 'AIzaSyA9f5Bx1718-esNIGD_w9QG1sK2Uxu1YNA'});
 	})
 	.catch(function(err){
 		console.log(err);
