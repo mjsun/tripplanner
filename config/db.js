@@ -5,16 +5,26 @@ var host = "mongodb://localhost/";
 var db = "tripplanner";
 
 module.exports = {
-	connect: connect
+	connect: connect,
+	disconnect: disconnect
 }
 
 function connect(){
 	return new Promise(function(resolve, reject){
-		mongoose.connect(host+db, function(err){
+		mongoose.createConnection(host+db, function(err){
 			if(err){
+				console.log(err);
 				reject(err);
 			}
 			resolve(mongoose.connection.name);
 		});
 	});
+}
+
+function disconnect(){
+  return new Promise(function(resolve, reject){
+    mongoose.disconnect(function(){
+      resolve();
+    });
+  });
 }

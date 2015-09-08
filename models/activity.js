@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var activitySchema = mongoose.Schema({
 	name: String,
-	place: [{type: mongoose.Schema.Types.ObjectId, ref: 'Place'}],
+	place: [require('./place').schema],
 	age_rang: String
 });
 

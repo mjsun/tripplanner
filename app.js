@@ -33,7 +33,8 @@ app.use(express.static(path.join(__dirname, 'bower_components')));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-require("./config/db").connect()
+var db = require("./config/db");
+db.connect()
 .then(function(data){
 	console.log("You are connected to "+data);
 })
@@ -44,11 +45,8 @@ require("./config/db").connect()
 
 app.get('/', function(req, res){
 	
-	Promise.all([models.Hotel.find().exec(), models.Restaurant.find().exec(), models.Activity.find().exec()])
+	Promise.all([models.Hotel.find(), models.Restaurant.find(), models.Activity.find()])
 	.then(function(all){
-        models.Place.find({_id: all[0][0].place[0]}).exec().then(function(data){
-            console.log(data);
-        });
 		res.render('index', {hotels: all[0], restaurants: all[1], activities: all[2], googleMapKey: 'AIzaSyA9f5Bx1718-esNIGD_w9QG1sK2Uxu1YNA'});
 	})
 	.catch(function(err){

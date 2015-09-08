@@ -66,7 +66,6 @@ mongoose.connection.on('open', function() {
     console.log("Dropped old data, now inserting data");
     Promise.map(Object.keys(data), function(modelName) {
       return Promise.map(data[modelName], function(item) {
-        item.place[0].save();
         return models[modelName].create(item);
       });
     }).then(function() {

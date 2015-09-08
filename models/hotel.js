@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var hotelSchema = mongoose.Schema({
 	name: String,
-	place: [{type: mongoose.Schema.Types.ObjectId, ref: 'place'}],
+	place: [require('./place').schema],
 	num_stars: Number,
 	amentities: String
 });
