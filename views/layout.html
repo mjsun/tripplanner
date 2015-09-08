@@ -1,11 +1,11 @@
 <html>
 	<head>
-		<link rel="stylesheet" href="stylesheets/tripplanner.css">
-		<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.css">
 		<link rel="stylesheet" href="font-awesome/css/font-awesome.css">
+		<link rel="stylesheet" href="stylesheets/tripplanner.css">
 	</head>
 	<body>
-		<nav class="navbar navbar-inverse">
+		<nav class="navbar navbar-inverse tp-navbar">
 		  <div class="container-fluid">
 		    <!-- Brand and toggle get grouped for better mobile display -->
 		    <div class="navbar-header">
@@ -15,15 +15,15 @@
 		        <span class="icon-bar"></span>
 		        <span class="icon-bar"></span>
 		      </button>
-		      <a class="navbar-brand" href="#"><i class="fa fa-map-marker"></i> Trip Planner</a>
+		      <a class="navbar-brand nav-font" href="#"><i class="fa fa-map-marker"></i> Trip Planner</a>
 		    </div>
 
 		    <!-- Collect the nav links, forms, and other content for toggling -->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      <ul class="nav navbar-nav">
-		        <li class="active"><a href="#">Home</a></li>
-		        <li><a href="#">About</a></li>
-		        <li><a href="#">Contact</a></li>
+		        <li class="active"><a class="nav-font" href="#">Home</a></li>
+		        <li><a class="nav-font"  href="#">About</a></li>
+		        <li><a class="nav-font"  href="#">Contact</a></li>
 		      </ul>
 <!-- 		      <ul class="nav navbar-nav navbar-right">
 		        <li><a href="#">Link</a></li>
@@ -35,6 +35,6 @@
 	</body>
 	<script type="text/javascript" src="jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?key={{googleMapKey}}&callback=initialize_gmaps"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key={{googleMapKey}}&sensor=true"></script>
 	<script src="js/map.js"></script>
 </html>

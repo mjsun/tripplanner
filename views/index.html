@@ -3,12 +3,12 @@
 {% block content %}
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-md-8">
+		<div class="col-md-8 left-pane">
 			<div id="map-canvas"></div>
 		</div>
-		<div class="col-md-4">
-			<div class="well">
-				<div>
+		<div class="col-md-4 right-pane">
+			<div class="well tp-panel">
+				<div class="tp-pane-item">
 					<label for="hotels">Hotels: </label>
 					<div>
 						<select id="hotels" name="hotels">
@@ -16,10 +16,10 @@
 								<option value="{{hotel._id.toString()}}">{{hotel.name}}</option>
 							{% endfor %}
 						</select>
-						<i class="fa fa-plus-circle pull-right"></i>
+						<i class="fa fa-plus-circle  fa-lg pull-right add-blue"></i>
 					</div>
 				</div>
-				<div >
+				<div class="tp-pane-item">
 					<label for="restaurants">Restaurants: </label>
 					<div>
 						<select id="restaurants" name="restaurants">
@@ -27,10 +27,10 @@
 								<option value="{{restaurant._id.toString()}}">{{restaurant.name}}</option>
 							{% endfor %}
 						</select>
-						<i class="fa fa-plus-circle pull-right"></i>
+						<i class="fa fa-plus-circle  fa-lg pull-right add-blue"></i>
 					</div>
 				</div>
-				<div>
+				<div class="tp-pane-item">
 					<label for="activities">Activities: </label>
 					<div>
 						<select id="activities" name="activities">
@@ -38,44 +38,45 @@
 								<option value="{{activity._id.toString()}}">{{activity.name}}</option>
 							{% endfor %}
 						</select>
-						<i class="fa fa-plus-circle pull-right"></i>
+						<i class="fa fa-plus-circle  fa-lg pull-right add-blue"></i>
 					</div>
 				</div>
 			</div>
-			<div>
-				<button class="btn btn-default" type="button">
-					Day 2  <i class="fa fa-times-circle"></i>
+			<div class="tp-date-panel">
+				<button class="btn btn-default tp-pane-day" type="button">
+					Day 2  <i class="fa fa-times-circle fa-lg sub-red"></i>
 				</button>
 			</div>
 
-			<div class="panel panel-default">
-			    <div class="panel-heading">
+			<div class="panel panel-default  tp-schedule-panel">
+			    <div class="panel-heading tp-panel-heading">
 			      <ul class="pagination">
-			      	<li><a href="#">1</a></li>
-			      	<li><a href="#">2</a></li>
-			      	<li><a href="#">3</a></li>
-			      	<li><a href="#">4</a></li>
+			      	<li><a class="btn-round" href="#">1</a></li>
+			      	<li><a class="btn-round active" href="#">2</a></li>
+			      	<li><a class="btn-round" href="#">3</a></li>
+			      	<li><a class="btn-round" href="#">4</a></li>
+			      	<li><a class="btn-round" href="#">+</a></li>
 			      </ul>
 			    </div>
-			    <div class="panel-body">
+			    <div class="panel-body tp-panel-body">
 			        <div>
 			        	<label>My Hotel</label>
 			        	<ul class="list-group">
-			        		<li class="list-group-item">Andaz Wall Street<i class="fa fa-times-circle pull-right"></i></li>
+			        		<li class="list-group-item">Andaz Wall Street<i class="fa fa-times-circle fa-lg pull-right sub-red"></i></li>
 			        	</ul>
 			        </div>
 			        <div>
 			        	<label>My Restaurants</label>
 			        	<ul class="list-group">
-			        		<li class="list-group-item">The Capital Grille<i class="fa fa-times-circle pull-right"></i></li>
-			        		<li class="list-group-item">Bouley<i class="fa fa-times-circle pull-right"></i></li>
+			        		<li class="list-group-item">The Capital Grille<i class="fa fa-times-circle fa-lg pull-right sub-red"></i></li>
+			        		<li class="list-group-item">Bouley<i class="fa fa-times-circle fa-lg pull-right sub-red"></i></li>
 			        	</ul>
 			        </div>
 			        <div>
 			        	<label>My Activities</label>
 			        	<ul class="list-group">
-			        		<li class="list-group-item">Mahayana Temple Buddhist Association  <i class="fa fa-times-circle pull-right"></i></li>
-			        		<li class="list-group-item">South Street Seaport  <i class="fa fa-times-circle pull-right"></i></li>
+			        		<li class="list-group-item">Mahayana Temple Buddhist Association  <i class="fa fa-times-circle  fa-lg pull-right sub-red"></i></li>
+			        		<li class="list-group-item">South Street Seaport  <i class="fa fa-times-circle fa-lg  pull-right sub-red"></i></li>
 			        	</ul>
 			        </div>
 			    </div>

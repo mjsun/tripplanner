@@ -1,6 +1,89 @@
+body {
+  background-color: #CEBEA9; }
+
 select {
   -webkit-appearance: menulist-button;
   width: 90%; }
+
+.navbar {
+  border-radius: 0px;
+  border-color: #392C11;
+  margin-bottom: 0px; }
+
+.navbar-inverse {
+  background-color: #533F29; }
+  .navbar-inverse .nav-font {
+    color: #8DD7F6 !important; }
+    .navbar-inverse .nav-font:hover {
+      color: #CCE8F3  !important; }
+  .navbar-inverse .active .nav-font {
+    color: #CCE8F3 !important; }
+
+.left-pane {
+  padding: 0px; }
+
+.right-pane {
+  padding: 15px; }
+
+.tp-panel {
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #EEE7DE; }
+  .tp-panel label {
+    color: #908C8C; }
+  .tp-panel .tp-pane-item {
+    margin-bottom: 20px; }
+
+.tp-date-panel {
+  padding: 15px;
+  text-align: center; }
+  .tp-date-panel .tp-pane-day {
+    border-radius: 10px;
+    background-color: transparent;
+    border: 1px solid #392C11;
+    padding: 10px 20px 10px 20px;
+    font-size: 20px; }
+
+.tp-schedule-panel {
+  border: none;
+  border-radius: 10px; }
+  .tp-schedule-panel label {
+    color: #908C8C; }
+  .tp-schedule-panel .tp-panel-heading {
+    margine: 0px;
+    background-color: #533F29;
+    padding: 5px 0 5px 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px; }
+    .tp-schedule-panel .tp-panel-heading ul {
+      margin: 0px;
+      padding: 0px; }
+      .tp-schedule-panel .tp-panel-heading ul .btn-round {
+        margin: 1px;
+        border-radius: 50px;
+        border-color: #8DD7F6;
+        color: #8DD7F6;
+        background-color: transparent; }
+        .tp-schedule-panel .tp-panel-heading ul .btn-round.active,
+        .tp-schedule-panel .tp-panel-heading ul .btn-round:hover {
+          color: #533F29;
+          background-color: #8DD7F6; }
+  .tp-schedule-panel .tp-panel-body {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background-color: #EEE7DE; }
+    .tp-schedule-panel .tp-panel-body .list-group-item {
+      background-color: transparent;
+      border: none; }
+      .tp-schedule-panel .tp-panel-body .list-group-item:hover {
+        background-color: #fff;
+        color: #533F29; }
+
+.add-blue {
+  color: #337ab7; }
+
+.sub-red {
+  color: #A53737; }
 
 #map-canvas {
   width: 100%;

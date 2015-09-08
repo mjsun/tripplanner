@@ -1,5 +1,115 @@
+body{
+	background-color: #CEBEA9;
+}
 select {
     // only works in webkit-compatible browsers
     -webkit-appearance: menulist-button;
     width: 90%;
 }
+
+.navbar {
+	border-radius: 0px;
+	border-color: #392C11;
+	margin-bottom: 0px;
+}
+.navbar-inverse{
+	background-color: #533F29;
+
+	.nav-font {
+		color: #8DD7F6 !important;
+		&:hover{
+			color: #CCE8F3  !important;
+		}
+	}
+
+	.active .nav-font {
+		color: #CCE8F3 !important;
+	}
+}
+
+.left-pane{
+	padding:0px;
+}
+
+.right-pane{
+	padding:15px;
+
+}
+
+.tp-panel {
+	padding: 15px;
+	border-radius: 10px;
+	background-color: #EEE7DE;
+	label {
+		color: #908C8C;
+	}
+	.tp-pane-item{
+		margin-bottom: 20px;
+	}
+}
+
+.tp-date-panel{
+	padding: 15px;
+	text-align: center;
+	.tp-pane-day{
+		border-radius: 10px;
+		background-color: transparent;
+		border: 1px solid #392C11;
+		padding: 10px 20px 10px 20px;
+		font-size: 20px;
+	}
+}
+
+.tp-schedule-panel{
+ 	border: none;
+ 	border-radius: 10px;
+ 	label {
+		color: #908C8C;
+	}
+	.tp-panel-heading{
+		margine: 0px;
+		background-color: #533F29;
+		padding: 5px 0 5px 10px;
+		border-top-left-radius: 10px;
+		border-top-right-radius: 10px;
+		ul{
+			margin: 0px;
+			padding: 0px;
+			.btn-round{
+				margin: 1px;
+				border-radius: 50px;
+				border-color: #8DD7F6;
+				color: #8DD7F6;
+				background-color: transparent;
+				&.active,
+				&:hover{
+					color: #533F29;
+					background-color: #8DD7F6;
+				}
+			}
+		}
+	}
+	.tp-panel-body{
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
+		background-color: #EEE7DE;
+		.list-group-item{
+			background-color: transparent;
+			border: none;
+			&:hover{
+				background-color: #fff;
+				color: #533F29;
+			}
+		}
+	}
+}
+
+.add-blue{
+	color: #337ab7;
+}
+.sub-red {
+	color: #A53737;
+}
+
+
+

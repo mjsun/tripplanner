@@ -6,9 +6,10 @@ var swig = require('swig');
 var morgan = require('morgan');
 var sass = require('node-sass-middleware');
 var Promise = require('bluebird');
-var Hotel = require('./models/hotel');
-var Restaurant = require('./models/restaurant');
-var Activity = require('./models/activity');
+var models = require('./models/index');
+// var Hotel = require('./models/hotel');
+// var Restaurant = require('./models/restaurant');
+// var Activity = require('./models/activity');
 swig.setDefaults({
 	cache: false
 });
@@ -19,10 +20,6 @@ app.set('views', __dirname+'/views');
 app.use( morgan('dev') );
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-
-
-
-
 
 app.use(
   sass({
@@ -47,8 +44,9 @@ require("./config/db").connect()
 
 app.get('/', function(req, res){
 	
-	Promise.all([Hotel.find(), Restaurant.find(), Activity.find()])
+	Promise.all([models.Hotel.find(), models.Restaurant.find(), models.Activity.find()])
 	.then(function(all){
+        console.log(all[0][0].place);
 		res.render('index', {hotels: all[0], restaurants: all[1], activities: all[2], googleMapKey: 'AIzaSyA9f5Bx1718-esNIGD_w9QG1sK2Uxu1YNA'});
 	})
 	.catch(function(err){
