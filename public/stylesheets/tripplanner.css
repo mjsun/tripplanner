@@ -80,10 +80,12 @@ select {
         color: #533F29; }
 
 .add-blue {
-  color: #337ab7; }
+  color: #337ab7;
+  line-height: normal; }
 
 .sub-red {
-  color: #A53737; }
+  color: #A53737;
+  line-height: normal; }
 
 #map-canvas {
   width: 100%;

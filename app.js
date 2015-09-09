@@ -7,6 +7,7 @@ var morgan = require('morgan');
 var sass = require('node-sass-middleware');
 var Promise = require('bluebird');
 var models = require('./models/index');
+var cors = require('cors');
 // var Hotel = require('./models/hotel');
 // var Restaurant = require('./models/restaurant');
 // var Activity = require('./models/activity');
@@ -42,6 +43,7 @@ db.connect()
 	console.log(err);
 })
 
+app.use(cors());
 
 app.get('/', function(req, res){
 	
@@ -54,6 +56,19 @@ app.get('/', function(req, res){
 	})
 	
 });
+
+app.get('/api/all', function(req, res){
+    
+    Promise.all([models.Hotel.find(), models.Restaurant.find(), models.Activity.find()])
+    .then(function(all){
+        res.json({hotels: all[0], restaurants: all[1], activities: all[2]});
+    })
+    .catch(function(err){
+        console.log(err);
+    })
+    
+});
+
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
