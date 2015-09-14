@@ -20,7 +20,9 @@ app.set('view engine', 'html');
 app.set('views', __dirname+'/views');
 app.use( morgan('dev') );
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 app.use(
   sass({
@@ -57,17 +59,7 @@ app.get('/', function(req, res){
 	
 });
 
-app.get('/api/all', function(req, res){
-    
-    Promise.all([models.Hotel.find(), models.Restaurant.find(), models.Activity.find()])
-    .then(function(all){
-        res.json({hotels: all[0], restaurants: all[1], activities: all[2]});
-    })
-    .catch(function(err){
-        console.log(err);
-    })
-    
-});
+app.use('/api', require('./routers/api'));
 
 
 app.use(function(req, res, next) {
