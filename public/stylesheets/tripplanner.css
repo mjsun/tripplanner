@@ -64,8 +64,7 @@ select {
         border-color: #8DD7F6;
         color: #8DD7F6;
         background-color: transparent; }
-        .tp-schedule-panel .tp-panel-heading ul .btn-round.active,
-        .tp-schedule-panel .tp-panel-heading ul .btn-round:hover {
+        .tp-schedule-panel .tp-panel-heading ul .btn-round.active {
           color: #533F29;
           background-color: #8DD7F6; }
   .tp-schedule-panel .tp-panel-body {

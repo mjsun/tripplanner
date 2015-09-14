@@ -81,8 +81,9 @@ select {
 				border-color: #8DD7F6;
 				color: #8DD7F6;
 				background-color: transparent;
-				&.active,
-				&:hover{
+				
+				//&:hover,
+				&.active{
 					color: #533F29;
 					background-color: #8DD7F6;
 				}

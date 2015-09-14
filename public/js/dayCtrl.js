@@ -29,9 +29,25 @@ Day.prototype = {
 			method: "GET",
 			url: "http://localhost:3000/api/restaurant/"+restaurantId
 		}).done((function(data){
-			console.log(data);
-			this.restaurants.push(data);
-			this.renderRestaurant(data);
+			//console.log(data);
+			if(this.restaurants.length === 3){
+				alert('You have reach maximun restaurants for this day!')
+			} else {
+
+				var hasIt = false;
+				for(var i = 0 ; i< this.restaurants.length; i++){
+					if(this.restaurants[i]._id === data._id){
+						alert('You have added restaurant '+ data.name);
+						hasIt = true;
+					}
+				}
+				if(!hasIt){
+					this.restaurants.push(data);
+					this.renderRestaurant(data);
+				}
+			}
+			
+			
 		}).bind(this));
 
 	},
@@ -42,19 +58,32 @@ Day.prototype = {
 			method: "GET",
 			url: "http://localhost:3000/api/activity/"+activityId
 		}).done((function(data){
-			console.log(data);
-			this.activities.push(data);
-			this.renderActivity(data);
+			//console.log(data);
+			var hasIt = false;
+			for(var i = 0 ; i< this.activities.length; i++){
+				if(this.activities[i]._id === data._id){
+					alert('You have added activity '+data.name);
+					hasIt = true;
+				}
+			}
+			if(!hasIt){
+				this.activities.push(data);
+				this.renderActivity(data);
+			}
+			
 		}).bind(this));
 	},
 	renderHotel: function(){
 		var hotel = $('#it-hotel');
 		hotel.html('');
-		var hotelHtml = $('<li class="list-group-item">'+this.hotel.name+'</li>');
-		var hotelDelBtn = $('<i class="fa fa-times-circle fa-lg pull-right sub-red"></i>');
-		hotelDelBtn.click(this.delHotel);
-		hotelHtml.append(hotelDelBtn);
-		hotel.append(hotelHtml);
+		if(this.hotel.name) {
+			var hotelHtml = $('<li class="list-group-item">'+this.hotel.name+'</li>');
+			var hotelDelBtn = $('<i class="fa fa-times-circle fa-lg pull-right sub-red"></i>');
+			hotelDelBtn.click(this.delHotel);
+			hotelHtml.append(hotelDelBtn);
+			hotel.append(hotelHtml);
+		}
+		
 	},
 	delHotel: function(){
 		$('#it-hotel').html('');
@@ -109,6 +138,11 @@ Day.prototype = {
 			this.activities = newList;
 			console.log(this);
 		}).bind(this);
+	},
+	renderAll: function(){
+		this.renderHotel();
+		this.renderRestaurant();
+		this.renderActivity();
 	}
 };
 
@@ -162,11 +196,16 @@ DayCtrl.prototype = {
 	},
 	setCurrent: function(){
 	  //alert(this.currentNumber);
+	  $('#day-ctrl .active').removeClass('active');
+	  $('a[day-number="'+this.currentNumber+'"]').addClass('active');
 	  this.setBanner(this.currentNumber);
+	  this.setDayObject(this.currentNumber);
 
 	},
-	setCurrentDayObject: function(num){
-		this.setCurrentDayObject = this.days[num-1];
+	setDayObject: function(num){
+		this.currentDay = this.days[num-1];
+		this.currentDay.renderAll();
+
 	},
 	setBanner: function(num){
 		$('#current-day-btn').html('');
