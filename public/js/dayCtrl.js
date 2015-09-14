@@ -1,11 +1,14 @@
-function Day(obj){
+function Day(obj, map){
+	this.map = new MapCtrl(map);
 	if(obj){
 
 	}else {
 		this.hotel = {};
 		this.restaurants = [];
 		this.activities = [];
+		this.allLocations = [];
 	}
+
 
 }
 
@@ -19,8 +22,18 @@ Day.prototype = {
 		}).done((function(data){
 			this.hotel = data;
 			this.renderHotel(data);
+			//have to remove existing marker first
+			this.launchMap(data, 'hotel');
 		}).bind(this));
 	
+	},
+	launchMap: function(data, cat){
+		var loc = $.extend([], data.place[0].location);
+		loc.push(data.name);
+		loc.push(cat);
+		loc.push(data._id);
+		this.map.createMarker(loc);
+		this.map.showMarkers(loc);
 	},
 	addRestaurant: function(){
 		var restaurantId = $('select#restaurants').val();
@@ -44,6 +57,7 @@ Day.prototype = {
 				if(!hasIt){
 					this.restaurants.push(data);
 					this.renderRestaurant(data);
+					this.launchMap(data, 'restaurant');
 				}
 			}
 			
@@ -58,7 +72,6 @@ Day.prototype = {
 			method: "GET",
 			url: "http://localhost:3000/api/activity/"+activityId
 		}).done((function(data){
-			//console.log(data);
 			var hasIt = false;
 			for(var i = 0 ; i< this.activities.length; i++){
 				if(this.activities[i]._id === data._id){
@@ -69,6 +82,7 @@ Day.prototype = {
 			if(!hasIt){
 				this.activities.push(data);
 				this.renderActivity(data);
+				this.launchMap(data, 'activity');
 			}
 			
 		}).bind(this));
@@ -79,15 +93,18 @@ Day.prototype = {
 		if(this.hotel.name) {
 			var hotelHtml = $('<li class="list-group-item">'+this.hotel.name+'</li>');
 			var hotelDelBtn = $('<i class="fa fa-times-circle fa-lg pull-right sub-red"></i>');
-			hotelDelBtn.click(this.delHotel);
+			hotelDelBtn.click(this.delHotel());
 			hotelHtml.append(hotelDelBtn);
 			hotel.append(hotelHtml);
 		}
 		
 	},
 	delHotel: function(){
-		$('#it-hotel').html('');
-		this.hotel={};
+		return (function(){
+			$('#it-hotel').html('');
+			this.hotel={};
+			this.map.deleteMarker(['category', 'hotel']);
+		}).bind(this);
 	},
 	renderRestaurant: function(){
 		var restaurants = $('#it-restaurants');
@@ -96,22 +113,23 @@ Day.prototype = {
 		for(var i = 0; i< self.restaurants.length; i++){
 
 			(function(restaurant){
-				var restaurantsHtml = $('<li class="list-group-item" rest-name="'+restaurant.name+'">'+restaurant.name+'</li>');
+				var restaurantsHtml = $('<li class="list-group-item" rest-id="'+restaurant._id+'">'+restaurant.name+'</li>');
 				var restaurantDelBtn = $('<i class="fa fa-times-circle fa-lg pull-right sub-red"></i>');
-				restaurantDelBtn.click(this.delRestaurant(restaurant.name));
+				restaurantDelBtn.click(this.delRestaurant(restaurant._id));
 				restaurantsHtml.append(restaurantDelBtn);
 				restaurants.append(restaurantsHtml);
 			}).call(self, self.restaurants[i]);
 		}
 	},
-	delRestaurant: function(name){
+	delRestaurant: function(id){
 		return (function(){
-			$('li[rest-name="'+name+'"]').remove();
+		
+			$('li[rest-id="'+id+'"]').remove();
 			var newRestList = this.restaurants.filter(function(restaurant){
-				return restaurant.name !== name;
+				return restaurant._id !== id;
 			});
 			this.restaurants = newRestList;
-			console.log(this);
+			this.map.deleteMarker(['_id', id]);
 		}).bind(this);
 	},
 	renderActivity: function(){
@@ -121,26 +139,26 @@ Day.prototype = {
 		for(var i = 0; i< self.activities.length; i++){
 
 			(function(activity){
-				var activitiesHtml = $('<li class="list-group-item" act-name="'+activity.name+'">'+activity.name+'</li>');
+				var activitiesHtml = $('<li class="list-group-item" act-id="'+activity._id+'">'+activity.name+'</li>');
 				var activityDelBtn = $('<i class="fa fa-times-circle fa-lg pull-right sub-red"></i>');
-				activityDelBtn.click(this.delActivity(activity.name));
+				activityDelBtn.click(this.delActivity(activity._id));
 				activitiesHtml.append(activityDelBtn);
 				activities.append(activitiesHtml);
 			}).call(self, self.activities[i]);
 		}
 	},
-	delActivity: function(name){
+	delActivity: function(id){
 		return (function(){
-			$('li[act-name="'+name+'"]').remove();
+			$('li[act-id="'+id+'"]').remove();
 			var newList = this.activities.filter(function(activity){
-				return activity.name !== name;
+				return activity._id !== id;
 			});
 			this.activities = newList;
-			console.log(this);
+			this.map.deleteMarker(['_id', id])
 		}).bind(this);
 	},
 	renderMap: function(){
-
+		this.map.showMarkers();
 	},
 	renderAll: function(){
 		this.renderHotel();
@@ -152,32 +170,65 @@ Day.prototype = {
 
 
 function DayCtrl(){
-	this.init = function (){
-		//alert('init');
+	this.currentDay = {};
+	this.currentNumber = 0;
+	//here you have to get data from the database, get all the days
+	this.days = [];
+	this.btns = [];
+
+	var baseLatLng = {lat: 40.705137, lng: -74.007624};
+	this.map = new google.maps.Map(document.getElementById('map-canvas'), {
+        center: baseLatLng,
+        zoom: 12
+    });
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((function(position) {
+            var pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+
+            this.map.setCenter(pos);
+            //var infoWindow = new google.maps.InfoWindow({map: map});
+            //infoWindow.setPosition(pos);
+            //infoWindow.setContent('Location found.');
+        }).bind(this), function() {
+            alert('Can find you location');
+        });
+    } else {
+        alert('Browser doesn\'t support Geolocation');
+    }
+
+    if(this.days.length === 0 ){
+		this.add();
+	}
+	
+}
+
+DayCtrl.prototype = {
+	init: function(){
 		this.currentDay = {};
 		this.currentNumber = 0;
 		//here you have to get data from the database, get all the days
 		this.days = [];
 		this.btns = [];
-
 		if(this.days.length === 0 ){
 			this.add();
 		}
-	}
-	this.init();
-	
-}
-
-DayCtrl.prototype = {
+	},
 	add: function(){
 		
 		//remove existing active btn
 		$('#day-ctrl .active').removeClass('active');
+
 		//create current day object and push it to the list
-		var newDay = new Day;
+		var newDay = new Day(null, this.map);
 		this.days.push(newDay);
 
 		//set current day to the new object
+		if(!$.isEmptyObject(this.currentDay)){
+			this.currentDay.map.clearMarkers();
+		}
 		this.currentDay = newDay;
 		this.currentNumber = this.days.length;
 
@@ -202,6 +253,7 @@ DayCtrl.prototype = {
 			if(toDelete){
 				var num = $('#current-day-btn').attr('num');
 				$('a[day-number="'+num+'"]').parent().remove();
+				self.days[num-1].map.deleteMarkers();
 				self.days.splice(num-1, 1);
 				//console.log(self.days);
 				self.btns.splice(num-1, 1);
@@ -251,6 +303,9 @@ DayCtrl.prototype = {
 
 	},
 	setDayObject: function(num){
+		//the previous day's markers need to be cleared
+		this.currentDay.map.clearMarkers();
+		//switch to the chosen day as current day
 		this.currentDay = this.days[num-1];
 		this.currentDay.renderAll();
 	},
