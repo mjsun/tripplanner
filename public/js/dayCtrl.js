@@ -150,12 +150,18 @@ Day.prototype = {
 function DayCtrl(){
 	this.currentDay = {};
 	this.currentNumber = 0;
+	//here you have to get data from the database, get all the days
 	this.days = [];
 	this.btns = [];
+
+	if(this.days.length === 0 ){
+		this.add();
+	}
 }
 
 DayCtrl.prototype = {
-	add: function(t){
+	add: function(){
+		
 		//remove existing active btn
 		$('#day-ctrl .active').removeClass('active');
 		//create current day object and push it to the list
@@ -171,10 +177,11 @@ DayCtrl.prototype = {
 
 		//add listening event to the button for setting current day object
 		newBtn.click(this.getCurrent(newBtn));
+
 		this.btns.push(newBtn);
 
 		//prepend the new btn in front of the add btn
-		$(t).parent().before(newBtn);
+		$('#add-day-btn').before(newBtn);
 
 		//change current day sign
 		this.setCurrent();
