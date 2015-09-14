@@ -139,24 +139,33 @@ Day.prototype = {
 			console.log(this);
 		}).bind(this);
 	},
+	renderMap: function(){
+
+	},
 	renderAll: function(){
 		this.renderHotel();
 		this.renderRestaurant();
 		this.renderActivity();
+		this.renderMap();
 	}
 };
 
 
 function DayCtrl(){
-	this.currentDay = {};
-	this.currentNumber = 0;
-	//here you have to get data from the database, get all the days
-	this.days = [];
-	this.btns = [];
+	this.init = function (){
+		//alert('init');
+		this.currentDay = {};
+		this.currentNumber = 0;
+		//here you have to get data from the database, get all the days
+		this.days = [];
+		this.btns = [];
 
-	if(this.days.length === 0 ){
-		this.add();
+		if(this.days.length === 0 ){
+			this.add();
+		}
 	}
+	this.init();
+	
 }
 
 DayCtrl.prototype = {
@@ -187,8 +196,40 @@ DayCtrl.prototype = {
 		this.setCurrent();
 
 	},
-	delete: function(){
-		alert('Delete current day itinerary!');
+	delete: function(self){
+		return (function(){
+			var toDelete = confirm('Are you sure to delete this day\'s plan?');
+			if(toDelete){
+				var num = $('#current-day-btn').attr('num');
+				$('a[day-number="'+num+'"]').parent().remove();
+				self.days.splice(num-1, 1);
+				//console.log(self.days);
+				self.btns.splice(num-1, 1);
+				if(self.days.length === 0){
+					self.init();
+				}
+				else {
+					//reset the pagination
+					self.resetPager();
+					self.currentDay = self.days[0];
+					self.currentNumber = 1;
+					self.setCurrent();
+				}
+			}
+			
+		});
+
+	},
+	resetPager: function(){
+		$('day-ctrl').html('');
+		for(var i=0; i<this.btns.length; i++){
+			if(i === 0){
+				this.btns[i].children('a').addClass('active');
+			}
+			this.btns[i].children('a').attr('day-number', i+1);
+			this.btns[i].children('a').html(i+1);
+			this.btns[i].click(this.getCurrent(this.btns[i]));
+		}
 	},
 	sortBtns: function(){
 
@@ -212,14 +253,14 @@ DayCtrl.prototype = {
 	setDayObject: function(num){
 		this.currentDay = this.days[num-1];
 		this.currentDay.renderAll();
-
 	},
 	setBanner: function(num){
 		$('#current-day-btn').html('');
+		$('#current-day-btn').attr('num', num);
 		var currentDayInfo = $('<font>Day '+ num +'</font> ')
 		$('#current-day-btn').append(currentDayInfo);
 		var deleteBtn = $('<i class="fa fa-times-circle fa-lg sub-red"></i>');
-		deleteBtn.click(this.delete);
+		deleteBtn.click(this.delete(this));
 		$('#current-day-btn').append(deleteBtn);
 	}
 
