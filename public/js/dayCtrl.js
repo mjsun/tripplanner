@@ -1,39 +1,86 @@
-function Day(obj, map){
-	this.map = new MapCtrl(map);
-	if(obj){
-
-	}else {
-		this.hotel = {};
-		this.restaurants = [];
-		this.activities = [];
-		this.allLocations = [];
-	}
-
-
+function Day(dayCtrl){
+	this.hotel = {};
+	this.restaurants = [];
+	this.activities = [];
+	this.markers = [];
+	this.dayCtrl = dayCtrl;
 }
 
 Day.prototype = {
+    image: {
+    	hotel: {
+	        url: '../img/markers/free-map-marker-icon-blue-darker.png',
+	        size: new google.maps.Size(40, 40),
+	        origin: new google.maps.Point(0, 0),
+	        anchor: new google.maps.Point(20, 40)
+	    },
+        restaurant: {
+	        url: '../img/markers/free-map-marker-icon-orange.png',
+	        size: new google.maps.Size(40, 40),
+	        origin: new google.maps.Point(0, 0),
+	        anchor: new google.maps.Point(20, 40)
+	    },
+        activity: {
+	        url: '../img/markers/free-map-marker-icon-green.png',
+	        size: new google.maps.Size(40, 40),
+	        origin: new google.maps.Point(0, 0),
+	        anchor: new google.maps.Point(20, 40)
+	    }
+    },
+	createMarkers: function(loc){
+       if(loc[3] === 'hotel'){ 
+            this.deleteMarker(['category', 'hotel'])
+        }
+        var marker = new google.maps.Marker({
+            position: {lat: loc[0], lng: loc[1]},
+            //map: this.dayCtrl.map,
+            icon: this.image[loc[3]],
+            title: loc[2],
+            zIndex: 3
+        });
+        marker.category = loc[3];
+        marker._id = loc[4];
+        this.markers.push(marker);
+	},
+	deleteMarker: function(arr){
+		for(var i=0; i<this.markers.length; i++){
+            if(this.markers[i][arr[0]] === arr[1]){
+            	this.markers[i].setMap(null);
+                this.markers.splice(i,1);
+            }
+        }
+	},
+	deleteMarkers: function() {
+		this.clearMarkers();
+        this.markers = [];
+    },
+    clearMarkers: function() {
+        this._setMapOnAllMarkers(null);
+    },
+    _setMapOnAllMarkers: function(map) {
+        for (var i = 0; i < this.markers.length; i++) {
+            this.markers[i].setMap(map);
+        }
+    },
+    showMarkers: function() {
+        this._setMapOnAllMarkers(this.dayCtrl.map);
+    },
 	addHotel: function(){
 		var hotelId = $('select#hotels').val();
-		
 		$.ajax({
 			method: "GET",
 			url: "http://localhost:3000/api/hotel/"+hotelId
 		}).done((function(data){
 			this.hotel = data;
 			this.renderHotel(data);
-			//have to remove existing marker first
-			this.launchMap(data, 'hotel');
+			var loc = $.extend([],data.place[0].location);
+			loc.push(data.name);
+			loc.push('hotel');
+			loc.push(data._id);
+			this.createMarkers(loc);
+			this.dayCtrl.renderMap();
 		}).bind(this));
 	
-	},
-	launchMap: function(data, cat){
-		var loc = $.extend([], data.place[0].location);
-		loc.push(data.name);
-		loc.push(cat);
-		loc.push(data._id);
-		this.map.createMarker(loc);
-		this.map.showMarkers(loc);
 	},
 	addRestaurant: function(){
 		var restaurantId = $('select#restaurants').val();
@@ -42,7 +89,6 @@ Day.prototype = {
 			method: "GET",
 			url: "http://localhost:3000/api/restaurant/"+restaurantId
 		}).done((function(data){
-			//console.log(data);
 			if(this.restaurants.length === 3){
 				alert('You have reach maximun restaurants for this day!')
 			} else {
@@ -57,7 +103,12 @@ Day.prototype = {
 				if(!hasIt){
 					this.restaurants.push(data);
 					this.renderRestaurant(data);
-					this.launchMap(data, 'restaurant');
+					var loc = $.extend([],data.place[0].location);
+					loc.push(data.name);
+					loc.push('restaurant');
+					loc.push(data._id);
+					this.createMarkers(loc);
+					this.dayCtrl.renderMap();
 				}
 			}
 			
@@ -82,7 +133,12 @@ Day.prototype = {
 			if(!hasIt){
 				this.activities.push(data);
 				this.renderActivity(data);
-				this.launchMap(data, 'activity');
+				var loc = $.extend([],data.place[0].location);
+				loc.push(data.name);
+				loc.push('activity');
+				loc.push(data._id);
+				this.createMarkers(loc);
+				this.dayCtrl.renderMap();
 			}
 			
 		}).bind(this));
@@ -103,7 +159,8 @@ Day.prototype = {
 		return (function(){
 			$('#it-hotel').html('');
 			this.hotel={};
-			this.map.deleteMarker(['category', 'hotel']);
+			this.deleteMarker(['category', 'hotel']);
+			this.dayCtrl.renderMap();
 		}).bind(this);
 	},
 	renderRestaurant: function(){
@@ -115,6 +172,7 @@ Day.prototype = {
 			(function(restaurant){
 				var restaurantsHtml = $('<li class="list-group-item" rest-id="'+restaurant._id+'">'+restaurant.name+'</li>');
 				var restaurantDelBtn = $('<i class="fa fa-times-circle fa-lg pull-right sub-red"></i>');
+				console.log(restaurant._id);
 				restaurantDelBtn.click(this.delRestaurant(restaurant._id));
 				restaurantsHtml.append(restaurantDelBtn);
 				restaurants.append(restaurantsHtml);
@@ -123,13 +181,13 @@ Day.prototype = {
 	},
 	delRestaurant: function(id){
 		return (function(){
-		
 			$('li[rest-id="'+id+'"]').remove();
 			var newRestList = this.restaurants.filter(function(restaurant){
 				return restaurant._id !== id;
 			});
 			this.restaurants = newRestList;
-			this.map.deleteMarker(['_id', id]);
+			this.deleteMarker(['_id', id]);
+			this.dayCtrl.renderMap();
 		}).bind(this);
 	},
 	renderActivity: function(){
@@ -142,6 +200,7 @@ Day.prototype = {
 				var activitiesHtml = $('<li class="list-group-item" act-id="'+activity._id+'">'+activity.name+'</li>');
 				var activityDelBtn = $('<i class="fa fa-times-circle fa-lg pull-right sub-red"></i>');
 				activityDelBtn.click(this.delActivity(activity._id));
+				console.log(activity._id);
 				activitiesHtml.append(activityDelBtn);
 				activities.append(activitiesHtml);
 			}).call(self, self.activities[i]);
@@ -154,44 +213,31 @@ Day.prototype = {
 				return activity._id !== id;
 			});
 			this.activities = newList;
-			this.map.deleteMarker(['_id', id])
+			this.deleteMarker(['_id', id]);
+			this.dayCtrl.renderMap();
 		}).bind(this);
-	},
-	renderMap: function(){
-		this.map.showMarkers();
 	},
 	renderAll: function(){
 		this.renderHotel();
 		this.renderRestaurant();
 		this.renderActivity();
-		this.renderMap();
 	}
 };
 
 
 function DayCtrl(){
-	this.currentDay = {};
-	this.currentNumber = 0;
-	//here you have to get data from the database, get all the days
-	this.days = [];
-	this.btns = [];
-
 	var baseLatLng = {lat: 40.705137, lng: -74.007624};
 	this.map = new google.maps.Map(document.getElementById('map-canvas'), {
         center: baseLatLng,
         zoom: 12
     });
-    if (navigator.geolocation) {
+ 	if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((function(position) {
-            var pos = {
+            this.currentPos = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             };
-
-            this.map.setCenter(pos);
-            //var infoWindow = new google.maps.InfoWindow({map: map});
-            //infoWindow.setPosition(pos);
-            //infoWindow.setContent('Location found.');
+            this.init();
         }).bind(this), function() {
             alert('Can find you location');
         });
@@ -199,51 +245,32 @@ function DayCtrl(){
         alert('Browser doesn\'t support Geolocation');
     }
 
-    if(this.days.length === 0 ){
-		this.add();
-	}
-	
 }
 
 DayCtrl.prototype = {
 	init: function(){
+		this.map.setCenter(this.currentPos, 12);
+
 		this.currentDay = {};
 		this.currentNumber = 0;
-		//here you have to get data from the database, get all the days
 		this.days = [];
-		this.btns = [];
-		if(this.days.length === 0 ){
+		this.dayButtons = [];
+
+	    if(this.days.length === 0 ){
 			this.add();
 		}
 	},
 	add: function(){
-		
-		//remove existing active btn
-		$('#day-ctrl .active').removeClass('active');
 
-		//create current day object and push it to the list
-		var newDay = new Day(null, this.map);
+		var newDay = new Day(this);
 		this.days.push(newDay);
-
-		//set current day to the new object
-		if(!$.isEmptyObject(this.currentDay)){
-			this.currentDay.map.clearMarkers();
-		}
-		this.currentDay = newDay;
 		this.currentNumber = this.days.length;
 
-		//calculate current day create current day btn and make it active
-		var newBtn = $('<li><a class="btn-round active" href="javascript:void(0);" day-number="'+this.days.length+'">'+ this.days.length +'</a></li>');
+		var newDayBtn = $('<li><a class="btn-round active" href="javascript:void(0);" day-number="'+this.days.length+'">'+ this.days.length +'</a></li>');
+		newDayBtn.click(this._setAsCurrentDay(newDayBtn));
+		this.dayButtons.push(newDayBtn);
 
-		//add listening event to the button for setting current day object
-		newBtn.click(this.getCurrent(newBtn));
-
-		this.btns.push(newBtn);
-
-		//prepend the new btn in front of the add btn
-		$('#add-day-btn').before(newBtn);
-
-		//change current day sign
+		$('#add-day-btn').before(newDayBtn);
 		this.setCurrent();
 
 	},
@@ -253,15 +280,14 @@ DayCtrl.prototype = {
 			if(toDelete){
 				var num = $('#current-day-btn').attr('num');
 				$('a[day-number="'+num+'"]').parent().remove();
-				self.days[num-1].map.deleteMarkers();
+				self.days[num-1].deleteMarkers();
 				self.days.splice(num-1, 1);
-				//console.log(self.days);
-				self.btns.splice(num-1, 1);
+				self.dayButtons.splice(num-1, 1);
+
 				if(self.days.length === 0){
 					self.init();
 				}
 				else {
-					//reset the pagination
 					self.resetPager();
 					self.currentDay = self.days[0];
 					self.currentNumber = 1;
@@ -274,51 +300,63 @@ DayCtrl.prototype = {
 	},
 	resetPager: function(){
 		$('day-ctrl').html('');
-		for(var i=0; i<this.btns.length; i++){
+		for(var i=0; i<this.dayButtons.length; i++){
 			if(i === 0){
-				this.btns[i].children('a').addClass('active');
+				this.dayButtons[i].children('a').addClass('active');
 			}
-			this.btns[i].children('a').attr('day-number', i+1);
-			this.btns[i].children('a').html(i+1);
-			this.btns[i].click(this.getCurrent(this.btns[i]));
+			this.dayButtons[i].children('a').attr('day-number', i+1);
+			this.dayButtons[i].children('a').html(i+1);
+			this.dayButtons[i].click(this._setAsCurrentDay(this.dayButtons[i]));
 		}
 	},
-	sortBtns: function(){
-
-	},
-	getCurrent: function(t){
+	_setAsCurrentDay: function(t){
 		return (function(){
-			//this.setCurrent();
 			this.currentNumber = $(t).find('a').attr('day-number');
 			this.setCurrent();
 
 		}).bind(this);
 	},
 	setCurrent: function(){
-	  //alert(this.currentNumber);
 	  $('#day-ctrl .active').removeClass('active');
 	  $('a[day-number="'+this.currentNumber+'"]').addClass('active');
-	  this.setBanner(this.currentNumber);
-	  this.setDayObject(this.currentNumber);
-
+	  this.setBanner();
+	  this.setDayObject();
 	},
-	setDayObject: function(num){
-		//the previous day's markers need to be cleared
-		this.currentDay.map.clearMarkers();
-		//switch to the chosen day as current day
-		this.currentDay = this.days[num-1];
+	setDayObject: function(){
+		if(!$.isEmptyObject(this.currentDay)){
+			this.currentDay.clearMarkers();
+		}
+		this.currentDay = this.days[this.currentNumber-1];
 		this.currentDay.renderAll();
+		this.renderMap();
 	},
-	setBanner: function(num){
+	setBanner: function(){
 		$('#current-day-btn').html('');
-		$('#current-day-btn').attr('num', num);
-		var currentDayInfo = $('<font>Day '+ num +'</font> ')
+		$('#current-day-btn').attr('num', this.currentNumber);
+		var currentDayInfo = $('<font>Day '+ this.currentNumber +'</font> ')
 		$('#current-day-btn').append(currentDayInfo);
 		var deleteBtn = $('<i class="fa fa-times-circle fa-lg sub-red"></i>');
 		deleteBtn.click(this.delete(this));
 		$('#current-day-btn').append(deleteBtn);
+	},
+	_setMapWithBounds: function(){
+		var bounds = new google.maps.LatLngBounds();
+		for (var i = 0; i < this.currentDay.markers.length; i++) {
+            bounds.extend(this.currentDay.markers[i].getPosition());
+        }
+        this.map.fitBounds(bounds);
+        this.currentDay.showMarkers();
+	},
+	_setMapDefault: function(){
+		this.map.setCenter(this.currentPos, 12);
+	},
+	renderMap: function(){
+		if(this.currentDay.markers.length === 0){
+			this._setMapDefault();
+		} else {
+			this._setMapWithBounds();
+		}
 	}
-
 };
 
 
