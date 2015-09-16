@@ -33,7 +33,6 @@ Day.prototype = {
         }
         var marker = new google.maps.Marker({
             position: {lat: loc[0], lng: loc[1]},
-            //map: this.dayCtrl.map,
             icon: this.image[loc[3]],
             title: loc[2],
             zIndex: 3
@@ -172,7 +171,6 @@ Day.prototype = {
 			(function(restaurant){
 				var restaurantsHtml = $('<li class="list-group-item" rest-id="'+restaurant._id+'">'+restaurant.name+'</li>');
 				var restaurantDelBtn = $('<i class="fa fa-times-circle fa-lg pull-right sub-red"></i>');
-				console.log(restaurant._id);
 				restaurantDelBtn.click(this.delRestaurant(restaurant._id));
 				restaurantsHtml.append(restaurantDelBtn);
 				restaurants.append(restaurantsHtml);
@@ -200,7 +198,6 @@ Day.prototype = {
 				var activitiesHtml = $('<li class="list-group-item" act-id="'+activity._id+'">'+activity.name+'</li>');
 				var activityDelBtn = $('<i class="fa fa-times-circle fa-lg pull-right sub-red"></i>');
 				activityDelBtn.click(this.delActivity(activity._id));
-				console.log(activity._id);
 				activitiesHtml.append(activityDelBtn);
 				activities.append(activitiesHtml);
 			}).call(self, self.activities[i]);
@@ -248,6 +245,20 @@ function DayCtrl(){
 }
 
 DayCtrl.prototype = {
+	save: function(){
+		this.days.forEach(function(day){
+			delete day.dayCtrl;
+			delete day.markers;
+		});
+		var data = JSON.stringify(this.days);
+		$.ajax({
+			method: "POST",
+			url: "http://localhost:3000/api/saveit",
+			data: {send: JSON.stringify(this.days)}
+		}).done(function(data){
+			console.log(data);
+		})
+	},
 	init: function(){
 		this.map.setCenter(this.currentPos, 12);
 

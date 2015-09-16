@@ -15,6 +15,9 @@ swig.setDefaults({
 	cache: false
 });
 
+
+app.use(cors());
+
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname+'/views');
@@ -45,7 +48,6 @@ db.connect()
 	console.log(err);
 })
 
-app.use(cors());
 
 app.get('/', function(req, res){
 	

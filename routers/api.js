@@ -15,7 +15,6 @@ router.get('/all', function(req, res){
     .catch(function(err){
         console.log(err);
     })
-    
 });
 
 router.get('/hotel/:id', function(req, res){
@@ -53,6 +52,24 @@ router.get('/activity/:id', function(req, res){
     	console.log(err);
     })
     
+});
+
+router.post('/saveit', function(req, res){
+    var days = JSON.parse(req.body.send);
+    
+    var modifiedDays = [];
+    days.forEach(function(day){
+        day.hotel = [day.hotel];
+        day.restaurant = day.restaurants;
+        day.activity = day.activities;
+        modifiedDays.push(new models.Day(day));
+    });
+
+    var trip = new models.Trip({trip: modifiedDays});
+    trip.save(function(){
+        res.json('saved');
+    })
+
 });
 
 module.exports = router;

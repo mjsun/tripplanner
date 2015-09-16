@@ -10,5 +10,7 @@ module.exports = {
 	Activity: require('./activity'),
 	Hotel: require('./hotel'),
 	Place: require('./place'),
-	Restaurant: require('./restaurant')
+	Restaurant: require('./restaurant'),
+	Day: require('./day'),
+	Trip: require('./trip')
 }
